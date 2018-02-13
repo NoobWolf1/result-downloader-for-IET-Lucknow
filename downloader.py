@@ -43,10 +43,9 @@ def result_downloader(first_roll,last_roll):
 		if new_name is None and new_SGPA is None:
 			continue
 		else :
-			
 			cur.execute('SELECT Names FROM Results WHERE  Names = ? ', (new_name, ) )
 			row = cur.fetchone()
-			cur.execute(''' INSERT INTO Results (Names,SGPA) VALUES (?,?) ''', (new_name,new_SGPA))
+			cur.execute(''' INSERT INTO Results (Rollnumber,Names,SGPA,Branch) VALUES (?,?,?,?) ''', (new_roll_number,new_name,new_SGPA,new_branch))
 			print('Downloading data of roll number', i)
 			conn.commit()
 
@@ -82,5 +81,4 @@ result_downloader(first_roll,last_roll)
 print("Downloading Lateral Entry's result.")
 result_downloader(lateral_first_roll,lateral_last_roll)
 print("Downloaded the result. Stored at", database)
-
 
