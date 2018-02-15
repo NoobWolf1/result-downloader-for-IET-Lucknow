@@ -1,10 +1,22 @@
 import requests
 from bs4 import BeautifulSoup
 import sqlite3
+import time
 
 def get_page(roll):
 	params = {'g-recaptcha-response' : '' ,'roll': str(roll) , 'type' : 'R'}
-	r = requests.post("http://result.ietlucknow.ac.in/ODD201718", data = params)
+
+	r = ''
+	while r == '':
+		try :
+			r = requests.post("http://result.ietlucknow.ac.in/ODD201718", data = params)
+		except :
+			print("Connection refused by the server..")
+			print("Retrying in 2 seconds")
+			time.sleep(2)
+			print("Retrying now....")
+			continue
+
 	soup = BeautifulSoup(r.text, 'html5lib')
 	return soup
 
@@ -12,7 +24,6 @@ def get_name(soup):
 	try :
 		name = soup.find_all('td')[1].get_text()
 		return name
-
 	except IndexError :
 		return None
 
@@ -27,10 +38,11 @@ def get_SGPA(soup):
 def get_branch(soup) :
 	try :
 		branch = soup.find_all('td')[9].get_text()
+		branch = branch.split()[1:-3]     
+		branch = ' '.join(branch)  #collected branchname
 		return branch
 	except IndexError :
 		return None
-
 
 def result_downloader(first_roll,last_roll):
 	for i in range(first_roll,last_roll+1) :
@@ -57,8 +69,6 @@ conn = sqlite3.connect(database)
 cur = conn.cursor()
 cur.execute(''' DROP TABLE IF EXISTS Results ''' )
 cur.execute(''' CREATE TABLE Results (Rollnumber INTEGER ,Names TEXT, SGPA INTEGER , Branch TEXT)  ''')
-
-
 
 print("Enter the year code... (ie. First two digits of your roll number) ")
 year_code = int(input())
