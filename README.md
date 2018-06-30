@@ -1,2 +1,2 @@
 # my-project
-IET odd semester result downloader.
+A class-wise results downloader for IET Lucknow
